@@ -96,3 +96,8 @@ void *wine_dlsym(void *handle, const char *symbol, char *error, size_t errorsize
     return ret;
 }
 
+void wine_dll_load(const char *filename, char *error, int errorsize, int *file_exists)
+{
+    printf("dll_load %s\n", filename);
+    return;
+}

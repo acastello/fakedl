@@ -1,0 +1,1 @@
+@ stdcall GetCursorPos(ptr)
