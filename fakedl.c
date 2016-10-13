@@ -43,8 +43,13 @@ void *NOP_D(void)
     return NULL;
 }
 
+void *real_winelib;
+void (*real_dll_load)(const char *, char *, int, int *);
+
 __attribute__((constructor)) void fakedl_init(void)
 {
+    real_winelib = dlopen("libwine.so", RTLD_LAZY);
+    real_dll_load = (void (*)(const char *, char *, int, int *)) dlsym(real_winelib, "wine_dll_load");
 }
 
 int is_out(const char *symbol)
@@ -98,6 +103,16 @@ void *wine_dlsym(void *handle, const char *symbol, char *error, size_t errorsize
 
 void wine_dll_load(const char *filename, char *error, int errorsize, int *file_exists)
 {
+    #define str(s) xstr(s)
+    #define xstr(s) #s
+    #define WOV "./wov3_" str(__WORDSIZE) ".dll.so"
     printf("dll_load %s\n", filename);
+    real_dll_load(filename, error, errorsize, file_exists);
+    if (!strcmp("user32.dll", filename)) {
+        char err[1024];
+        int __p;
+        puts(WOV);
+        // real_dll_load(WOV, err, sizeof(err), &__p);
+    }
     return;
 }
